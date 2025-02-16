@@ -1,0 +1,148 @@
+Comandos usados practica 1
+
+============================================
+
+Primera parte 
+
+Sudo nano /etc/default/grub
+Sudo update-grub
+Sudo reboot
+
+
+Segunda parte
+Precionar la letra e
+
+Buscar la línea ro quiet y escribir: init=/bin/bash  ctrl+x
+
+Una vez dentro Colocar:
+mount -n - o remount, rw /
+ passwd root
+
+Para salir y que se apliquen los cambios 
+
+exec /sbin/init
+
+
+Comandos usados practica 2
+
+============================================ 
+
+usar el editor de texto nano para crear los scripts
+
+nano ejemplo.sh
+
+Crear un script que haga un backup creando un comprimido utilizando TAR de la carpeta /home/(tu_usuario). el nombre del archivo debe de tener la fecha y la hora actual en formato dd-mm-yyyy:hh:mm
+
+#!/bin/bash
+
+# Obtener la facha y hora actual en el formato dd-mm-yyyy:hh:mm
+
+fecha_actual=$(date +"%d-%m-%Y:H:%M")
+
+# Definir la carpeta de origen y el nombre del archivo de backup
+
+carpeta_origen="/home/$(whoami)"
+archivo_backup="/home/$(whoami)/backup_${fecha_actual}.tar.gz"
+
+# Crear el backup comprimido con TAR 
+tar -czvf "$archivo_backup" "$carpeta_origen"
+
+# Verificar si el backup se creo correctamente
+if [ $? -eq 0 ]; then 
+    echo "Backup creado exitosamente en: $archivo_backup"
+else
+    echo "Hubo un error al crear el backup."
+fi
+
+
+Crear un script que copie el resultado del comando ifconfig en un archivo en el escritorio. El script debe de preguntar cual nombre desea ponerle al archivo y crear el archivo con el nombre provisto
+
+
+#!/bin/bash
+
+# Preguntar al usuario por el nombre del archivo
+read -p "¿Qué nombre deseas ponerle al archivo? " nombre_archivo
+
+# Definir la ruta del archivo en el escritorio
+ruta_archivo="/home/$(whoami)/Desktop/${nombre_archivo}.txt"
+
+# Ejecutar el comando ip add y redirigir la salida al archivo
+ip add > "$ruta_archivo"
+
+# Verificar si el archivo se creó correctamente
+if [ $? -eq 0 ]; then
+    echo "El archivo se ha creado exitosamente en: $ruta_archivo"
+else
+    echo "Hubo un error al crear el archivo."
+fi
+
+
+Despues de crear los scripts debemos de darle permisos de ejecucion:
+
+chmod +x ejemplo.sh
+
+Y por ultimo ejecutamos el script con:
+
+./ejemplo.sh
+
+Comandos usados practica 3
+
+============================================
+
+1. Verifica la Configuración de Red en la VM
+Antes de conectarte, revisa cómo está configurada la red de tu máquina virtual. Si estás usando VirtualBox, puedes ir a:
+
+Configuración → Red → Modo de red.
+Los modos recomendados para SSH son:
+
+"Adaptador puente" (Bridged Adapter): La VM tendrá una IP en la misma red que tu máquina host.
+"Red NAT con reenvío de puertos": Si no puedes usar puente, puedes configurar el reenvío de puertos.
+
+2. Instalar y Habilitar el Servidor SSH en Debian
+En la VM con Debian, instala y habilita el servicio SSH:
+
+sudo apt update
+sudo apt install -y ssh
+sudo systemctl enable --now ssh
+
+Verifica que está corriendo:
+
+sudo systemctl status ssh
+
+3. Obtener la Dirección IP de la VM
+Si usaste Adaptador Puente o NAT con IP fija, revisa la IP de la VM con:
+
+ip add
+
+
+4. Conectarse desde Windows con SSH
+En Windows 10/11 puedes usar PowerShell o el Símbolo del sistema:
+
+ssh usuario@192.168.1.100
+
+5. Generar el Par de Claves en Windows
+Abre PowerShell y ejecuta:
+
+ssh-keygen 
+
+Cuando te pida el destino para guardar las llaves, usa la ruta predeterminada (C:\Users\TuUsuario\.ssh\id_rsa) o especifica otra ruta personalizada.
+Cuando pida la passphrase, presiona Enter (déjala en blanco).
+
+Esto generará dos archivos:
+
+Clave privada: id_rsa (NO compartir)
+Clave pública: id_rsa.pub (se debe copiar al servidor)
+
+6. Copiar la Clave Pública a la VM Debian
+
+mkdir -p ~/.ssh
+echo "PEGA_AQUI_LA_CLAVE_PUBLICA" >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+chmod 700 ~/.ssh
+
+3. Probar la Conexión sin Contraseña
+Desde Windows, intenta conectarte nuevamente:
+
+ssh usuario@192.168.1.100
+
+Si todo está bien, accederás sin que te pida la contraseña. 
