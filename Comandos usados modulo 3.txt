@@ -5,6 +5,11 @@ Comandos usados practica 1
 Primera parte 
 
 Sudo nano /etc/default/grub
+
+*CAMBIAR EL TIEMPO DE ESPERA*
+GRUB_TIMEOUT= *cambiar tiempo*
+
+
 Sudo update-grub
 Sudo reboot
 
@@ -15,7 +20,7 @@ Precionar la letra e
 Buscar la línea ro quiet y escribir: init=/bin/bash  ctrl+x
 
 Una vez dentro Colocar:
-mount -n - o remount, rw /
+mount -n - o remount,rw /
  passwd root
 
 Para salir y que se apliquen los cambios 
